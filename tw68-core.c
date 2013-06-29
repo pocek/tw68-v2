@@ -511,7 +511,11 @@ static int tw68_hwfini(struct tw68_dev *dev)
 	return 0;
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,8,0)
 static void __devinit must_configure_manually(void)
+#else
+static void must_configure_manually(void)
+#endif
 {
 	unsigned int i, p;
 
@@ -651,8 +655,13 @@ static void mpeg_ops_detach(struct tw68_mpeg_ops *ops,
 	dev->mops = NULL;
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,8,0)
 static int __devinit tw68_initdev(struct pci_dev *pci_dev,
 				     const struct pci_device_id *pci_id)
+#else
+static int tw68_initdev(struct pci_dev *pci_dev,
+                                     const struct pci_device_id *pci_id)
+#endif
 {
 	struct tw68_dev *dev;
 	struct tw68_mpeg_ops *mops;
@@ -907,7 +916,11 @@ static int __devinit tw68_initdev(struct pci_dev *pci_dev,
 	return err;
 }
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,8,0)
 static void __devexit tw68_finidev(struct pci_dev *pci_dev)
+#else
+static void tw68_finidev(struct pci_dev *pci_dev)
+#endif
 {
 	struct v4l2_device *v4l2_dev = pci_get_drvdata(pci_dev);
 	struct tw68_dev *dev =
@@ -1057,7 +1070,12 @@ static struct pci_driver tw68_pci_driver = {
 	.name	  = "tw68",
 	.id_table = tw68_pci_tbl,
 	.probe	  = tw68_initdev,
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,8,0)
 	.remove	  = __devexit_p(tw68_finidev),
+#else
+	.remove   = tw68_finidev,
+#endif
 #ifdef CONFIG_PM
 	.suspend  = tw68_suspend,
 	.resume   = tw68_resume

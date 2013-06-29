@@ -65,6 +65,7 @@ cscope:
 
 install: all
 	sudo find $(TWMODS) -name tw68.ko -exec rm -f {} \;
+	sudo mkdir -p $(TWDEST)
 	sudo cp -p tw68.ko $(TWDEST)
 	sudo depmod -a
 
