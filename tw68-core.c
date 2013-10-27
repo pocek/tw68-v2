@@ -592,7 +592,11 @@ static struct video_device *vdev_init(struct tw68_dev *dev,
 		return NULL;
 	*vfd = *template;
 	vfd->minor   = -1;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,11,0)
 	vfd->parent  = &dev->pci->dev;
+#else
+	vfd->v4l2_dev = &dev->v4l2_dev;
+#endif
 	vfd->release = video_device_release;
 	/* vfd->debug   = tw_video_debug; */
 	snprintf(vfd->name, sizeof(vfd->name), "%s %s (%s)",

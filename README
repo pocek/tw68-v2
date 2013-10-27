@@ -108,3 +108,6 @@ Changed tw68.h and tw68-core.c to properly handle the absence of __devinit and
 __devexit in kernel version 3.8.0 and above.
 Changed makefile so 'make install' will create the module destination directory
 if it does not exist.
+
+26 October 2013
+Modified tw68-core.c and tw68-video.c to compile properly with kernel version 3.11.0.

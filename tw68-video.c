@@ -2076,7 +2076,9 @@ struct video_device tw68_video_template = {
 	.ioctl_ops		= &video_ioctl_ops,
 	.minor			= -1,
 	.tvnorms		= TW68_NORMS,
+#if LINUX_VERSION_CODE < KERNEL_VERSION(3,11,0)
 	.current_norm		= V4L2_STD_PAL,
+#endif
 };
 
 struct video_device tw68_radio_template = {
