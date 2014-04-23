@@ -1532,7 +1532,7 @@ static int tw68_querycap(struct file *file, void  *priv,
 }
 
 static int tw68_s_std_internal(struct tw68_dev *dev, struct tw68_fh *fh,
-			v4l2_std_id *id)
+			v4l2_std_id id)
 {
 /*	unsigned long flags; */
 	unsigned int i;
@@ -1553,14 +1553,14 @@ static int tw68_s_std_internal(struct tw68_dev *dev, struct tw68_fh *fh,
 
 	/* Look for match on complete norm id (may have mult bits) */
 	for (i = 0; i < TVNORMS; i++) {
-		if (*id == tvnorms[i].id)
+		if (id == tvnorms[i].id)
 			break;
 	}
 
 	/* If no exact match, look for norm which contains this one */
 	if (i == TVNORMS)
 		for (i = 0; i < TVNORMS; i++) {
-			if (*id & tvnorms[i].id)
+			if (id & tvnorms[i].id)
 				break;
 		}
 	/* If still not matched, give up */
@@ -1568,7 +1568,7 @@ static int tw68_s_std_internal(struct tw68_dev *dev, struct tw68_fh *fh,
 		return -EINVAL;
 
 	/* TODO - verify this additional work with SECAM applies to TW */
-	if ((*id & V4L2_STD_SECAM) && (secam[0] != '-')) {
+	if ((id & V4L2_STD_SECAM) && (secam[0] != '-')) {
 		if (secam[0] == 'L' || secam[0] == 'l') {
 			if (secam[1] == 'C' || secam[1] == 'c')
 				fixup = V4L2_STD_SECAM_LC;
@@ -1585,7 +1585,6 @@ static int tw68_s_std_internal(struct tw68_dev *dev, struct tw68_fh *fh,
 				break;
 	}
 
-	*id = tvnorms[i].id;
 	mutex_lock(&dev->lock);
 	set_tvnorm(dev, &tvnorms[i]);	/* do the actual setting */
 	tw68_tvaudio_do_scan(dev);
@@ -1593,7 +1592,7 @@ static int tw68_s_std_internal(struct tw68_dev *dev, struct tw68_fh *fh,
 	return 0;
 }
 
-static int tw68_s_std(struct file *file, void *priv, v4l2_std_id *id)
+static int tw68_s_std(struct file *file, void *priv, v4l2_std_id id)
 {
 	struct tw68_fh *fh = priv;
 	struct tw68_dev *dev = fh->dev;
@@ -1648,7 +1647,7 @@ static int tw68_g_tuner(struct file *file, void *priv,
 }
 
 static int tw68_s_tuner(struct file *file, void *priv,
-					struct v4l2_tuner *t)
+					const struct v4l2_tuner *t)
 {
 	struct tw68_fh *fh = priv;
 	struct tw68_dev *dev = fh->dev;
@@ -1693,7 +1692,7 @@ static int tw68_g_frequency(struct file *file, void *priv,
 }
 
 static int tw68_s_frequency(struct file *file, void *priv,
-					struct v4l2_frequency *f)
+					const struct v4l2_frequency *f)
 {
 	struct tw68_fh *fh = priv;
 	struct tw68_dev *dev = fh->dev;
@@ -1732,7 +1731,7 @@ static int tw68_g_audio(struct file *file, void *priv, struct v4l2_audio *a)
 	return 0;
 }
 
-static int tw68_s_audio(struct file *file, void *priv, struct v4l2_audio *a)
+static int tw68_s_audio(struct file *file, void *priv, const struct v4l2_audio *a)
 {
 	return 0;
 }
@@ -1811,11 +1810,12 @@ static int tw68_g_crop(struct file *file, void *f, struct v4l2_crop *crop)
 	return 0;
 }
 
-static int tw68_s_crop(struct file *file, void *f, struct v4l2_crop *crop)
+static int tw68_s_crop(struct file *file, void *f, const struct v4l2_crop *crop)
 {
 	struct tw68_fh *fh = f;
 	struct tw68_dev *dev = fh->dev;
 	struct v4l2_rect *b = &dev->crop_bounds;
+	struct v4l2_rect *c = &dev->crop_current;
 
 	dprintk(DBG_FLOW, "%s\n", __func__);
 	if (res_locked(fh->dev, RESOURCE_VIDEO))
@@ -1827,24 +1827,24 @@ static int tw68_s_crop(struct file *file, void *f, struct v4l2_crop *crop)
 		return -EINVAL;
 	}
 
+	*c = crop->c;
 	if (crop->c.top < b->top)
-		crop->c.top = b->top;
+		c->top = b->top;
 	if (crop->c.top > b->top + b->height)
-		crop->c.top = b->top + b->height;
+		c->top = b->top + b->height;
 	if (crop->c.height > b->top - crop->c.top + b->height)
-		crop->c.height = b->top - crop->c.top + b->height;
+		c->height = b->top - crop->c.top + b->height;
 
 	if (crop->c.left < b->left)
-		crop->c.left = b->left;
+		c->left = b->left;
 	if (crop->c.left > b->left + b->width)
-		crop->c.left = b->left + b->width;
+		c->left = b->left + b->width;
 	if (crop->c.width > b->left - crop->c.left + b->width)
-		crop->c.width = b->left - crop->c.left + b->width;
+		c->width = b->left - crop->c.left + b->width;
 
 	dprintk(DBG_FLOW, "%s: setting cropping rectangle: top=%d, left=%d, "
-		    "width=%d, height=%d\n", __func__, crop->c.top,
-		    crop->c.left, crop->c.width, crop->c.height);
-	dev->crop_current = crop->c;
+		    "width=%d, height=%d\n", __func__, c->top,
+		    c->left, c->width, c->height);
 	return 0;
 }
 
