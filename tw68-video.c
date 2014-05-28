@@ -1978,9 +1978,6 @@ static int vidioc_g_register(struct file *file, void *priv,
 	struct tw68_dev *dev = fh->dev;	/* needed for tw_readb */
 
 	dprintk(DBG_FLOW, "%s\n", __func__);
-	if (!v4l2_chip_match_host(&reg->match))
-		dprintk(DBG_UNEXPECTED, "%s: match failed\n", __func__);
-		return -EINVAL;
 	if (reg->size == 1)
 		reg->val = tw_readb(reg->reg);
 	else
@@ -1996,10 +1993,6 @@ static int vidioc_s_register(struct file *file, void *priv,
 
 	dprintk(DBG_FLOW, "%s: request to set reg 0x%04x to 0x%02x\n",
 		__func__, (unsigned int)reg->reg, (unsigned int)reg->val);
-	if (!v4l2_chip_match_host(&reg->match)) {
-		dprintk(DBG_UNEXPECTED, "%s: match failed\n", __func__);
-		return -EINVAL;
-	}
 	if (reg->size == 1)
 		tw_writeb(reg->reg, reg->val);
 	else
