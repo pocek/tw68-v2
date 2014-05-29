@@ -1456,7 +1456,7 @@ static int tw68_enum_input(struct file *file, void *priv,
 
 		if (0 != (v1 & TW68_STATUS_VDLOSS))
 			i->status |= V4L2_IN_ST_NO_SYNC;
-		if (0 != (v1 & TW68_STATUS_HLOCK))
+		if (0 == (v1 & TW68_STATUS_HLOCK))
 			i->status |= V4L2_IN_ST_NO_H_LOCK;
 		if (0 != (v1 & TW68_STATUS_NOVIDEO))
 			i->status |= V4L2_IN_ST_NO_SIGNAL;
