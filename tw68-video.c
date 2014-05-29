@@ -1454,13 +1454,13 @@ static int tw68_enum_input(struct file *file, void *priv,
 		int v1 = tw_readb(TW68_STATUS1);
 		int v2 = tw_readb(TW68_MVSN);
 
-		if (0 != (v1 & (1 << 7)))
+		if (0 != (v1 & TW68_STATUS_VDLOSS))
 			i->status |= V4L2_IN_ST_NO_SYNC;
-		if (0 != (v1 & (1 << 6)))
+		if (0 != (v1 & TW68_STATUS_HLOCK))
 			i->status |= V4L2_IN_ST_NO_H_LOCK;
-		if (0 != (v1 & (1 << 2)))
+		if (0 != (v1 & TW68_STATUS_NOVIDEO))
 			i->status |= V4L2_IN_ST_NO_SIGNAL;
-		if (0 != (v1 & 1 << 1))
+		if (0 != (v1 & TW68_STATUS_MONO))
 			i->status |= V4L2_IN_ST_NO_COLOR;
 		if (0 != (v2 & (1 << 2)))
 			i->status |= V4L2_IN_ST_MACROVISION;

@@ -81,6 +81,15 @@
 #define	TW68_RDLEN		(20)
 #define	TW68_SBRW		(24)
 #define	TW68_SBDEV		(25)
+/* define the Decoder Status Register 1 bits */
+#define TW68_STATUS_DET50	(1 << 0)
+#define TW68_STATUS_MONO	(1 << 1)
+#define TW68_STATUS_NOVIDEO	(1 << 2)
+#define TW68_STATUS_VLOCK	(1 << 3)
+#define TW68_STATUS_FIELD	(1 << 4)
+#define TW68_STATUS_SLOCK	(1 << 5)
+#define TW68_STATUS_HLOCK	(1 << 6)
+#define TW68_STATUS_VDLOSS	(1 << 7)
 
 #define	TW68_SBMODE_B		(1 << TW68_SBMODE)
 #define	TW68_WREN_B		(1 << TW68_WREN)
